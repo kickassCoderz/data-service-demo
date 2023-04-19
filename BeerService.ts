@@ -15,20 +15,41 @@ import {
 } from '@kickass-coderz/data-service'
 
 class BeerService implements IDataService {
-    getOne<T extends TBaseResponse>(
+    async getOne<T extends TBaseResponse>(
         resource: string,
         parameters: TGetOneParameters,
         context?: TQueryContext | undefined
     ): Promise<T> {
-        throw new Error('Method not implemented.')
+        const response = await fetch(`https://api.punkapi.com/v2/${resource}/${parameters.id}`, {
+            headers: {
+                'content-type': 'application/json',
+                accept: 'application/json'
+            }
+        })
+        const result = await response.json()
+
+        return result[0]
     }
-    getList<T extends TBaseResponse>(
+
+    async getList<T extends TBaseResponse>(
         resource: string,
         parameters?: TGetListParameters | undefined,
         context?: TQueryContext | undefined
     ): Promise<TGetListResponse<T[]>> {
-        throw new Error('Method not implemented.')
+        const response = await fetch(`https://api.punkapi.com/v2/${resource}`, {
+            headers: {
+                'content-type': 'application/json',
+                accept: 'application/json'
+            }
+        })
+        const result = await response.json()
+
+        return {
+            data: result,
+            total: result.length
+        }
     }
+
     getMany<T extends TBaseResponse>(
         resource: string,
         parameters: TGetManyParameters,
@@ -36,6 +57,7 @@ class BeerService implements IDataService {
     ): Promise<T[]> {
         throw new Error('Method not implemented.')
     }
+
     createOne<T extends TBaseResponse>(resource: string, parameters: TCreateOneParameters): Promise<T> {
         throw new Error('Method not implemented.')
     }
